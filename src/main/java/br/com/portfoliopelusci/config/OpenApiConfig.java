@@ -14,7 +14,7 @@ public class OpenApiConfig {
 	public OpenAPI custonOpenAPI() {
 		return new OpenAPI()
 				.info(new Info()
-						.title("Teste eureka")
+						.title("Teste meetime")
 						.version("v1")
 						.description("Some description about your API")
 						.termsOfService("1")

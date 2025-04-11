@@ -13,3 +13,8 @@ spring:
     show-sql: false
   profiles:
     active: dev,prod
+hubspot:
+  client-id: 80737f7d-c76e-4ee9-85fe-d45b98b80b4c
+  redirect-uri: http://localhost
+  client-secret: babaf647-0872-4880-b9df-75c2e93120c8
+  scope: oauth
