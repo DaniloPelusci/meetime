@@ -13,9 +13,11 @@ spring:
     show-sql: false
   profiles:
     active: dev,prod
-hubspot:
-  client-id: 80737f7d-c76e-4ee9-85fe-d45b98b80b4c
-  redirect-uri: http://localhost:8080
-  client-secret: babaf647-0872-4880-b9df-75c2e93120c8
-  scope: crm.objects.contacts.read crm.objects.contacts.write
-  access-token: CJKirLbiMhICAAEY27_WFyD43eQlKPGCjAUyFJI6oSq_Scq1WPQ6QQX1N3ko6MEeOgQAAABBQhQN3ohgh9Mm9dtCUTizk6X4W3Wh70oDbmExUgBaAGAAaPjd5CVwAA
+resilience4j:
+  retry:
+    instances:
+      hubspotApi:
+        max-attempts: 3
+        wait-duration: 2s
+        retry-exceptions:
+          - org.springframework.web.client.HttpClientErrorException.TooManyRequests

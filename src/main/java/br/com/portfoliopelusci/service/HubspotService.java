@@ -6,8 +6,11 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import br.com.portfoliopelusci.exceptions.HubspotApiException;
 import br.com.portfoliopelusci.model.ContatoRequest;
 
 @Service
@@ -32,7 +35,15 @@ public class HubspotService {
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.postForEntity(url, request, String.class);
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.postForEntity(url, request, String.class);
+        } catch (HttpClientErrorException | HttpServerErrorException ex) {
+            throw new HubspotApiException("Erro ao criar contato: " + ex.getResponseBodyAsString(), ex.getRawStatusCode());
+        } catch (Exception ex) {
+            throw new HubspotApiException("Erro inesperado ao criar contato: " + ex.getMessage(), 500);
+        }
+        
+        
     }
 }
