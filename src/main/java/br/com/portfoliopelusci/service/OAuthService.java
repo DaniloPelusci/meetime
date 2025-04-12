@@ -2,7 +2,6 @@ package br.com.portfoliopelusci.service;
 
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -13,42 +12,34 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import br.com.portfoliopelusci.dto.OAuthDTO;
+
 @Service
 public class OAuthService {
 
-    @Value("${hubspot.client-id}")
-    private String clientId;
 
-    @Value("${hubspot.redirect-uri}")
-    private String redirectUri;
 
-    @Value("${hubspot.scope}")
-    private String scope;
-    
-    @Value("${hubspot.client-secret}")
-    private String clientSecret;
-
-    public String generateAuthorizationUrl() {
+    public String generateAuthorizationUrl(OAuthDTO outh) {
         return UriComponentsBuilder
                 .fromHttpUrl("https://app.hubspot.com/oauth/authorize")
-                .queryParam("client_id", clientId)
-                .queryParam("redirect_uri", redirectUri)
-                .queryParam("scope", scope)
+                .queryParam("client_id", outh.getClientId())
+                .queryParam("redirect_uri", outh.getRedirectUri())
+                .queryParam("scope", outh.getScope())
                 .queryParam("response_type", "code")
                 .build()
                 .toUriString();
     }
-    
-    public Map<String, Object> exchangeCodeForToken(String code) {
+
+    public Map<String, Object> exchangeCodeForToken(OAuthDTO outh) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         form.add("grant_type", "authorization_code");
-        form.add("client_id", clientId);
-        form.add("client_secret", clientSecret);
-        form.add("redirect_uri", redirectUri);
-        form.add("code", code);
+        form.add("client_id", outh.getClientId());
+        form.add("client_secret", outh.getClientSecret());
+        form.add("redirect_uri", outh.getRedirectUri());
+        form.add("code", outh.getCode());
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(form, headers);
 
@@ -59,7 +50,7 @@ public class OAuthService {
                 Map.class
         );
 
-        return response.getBody(); // Contém access_token, refresh_token, expires_in etc.
+
+        return response.getBody();
     }
-    
 }
