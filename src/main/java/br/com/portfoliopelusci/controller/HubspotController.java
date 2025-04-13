@@ -27,4 +27,5 @@ public class HubspotController {
         hubspotService.criarContato(request,accessToken);
         return ResponseEntity.ok("Contato criado com sucesso!");
     }
+    
 }

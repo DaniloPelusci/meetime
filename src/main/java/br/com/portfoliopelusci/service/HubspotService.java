@@ -12,14 +12,15 @@ import org.springframework.web.client.RestTemplate;
 
 import br.com.portfoliopelusci.exceptions.HubspotApiException;
 import br.com.portfoliopelusci.model.ContatoRequest;
+import io.github.resilience4j.retry.annotation.Retry;
 
 @Service
 public class HubspotService {
 
-    
+	@Retry(name = "hubspotApi", fallbackMethod = "fallbackContato")
     public void criarContato(ContatoRequest contato, String accessToken) {
         String url = "https://api.hubapi.com/crm/v3/objects/contacts";
-
+        System.out.println("Tentando criar contato no HubSpot...");
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -46,4 +47,8 @@ public class HubspotService {
         
         
     }
+	public void fallbackContato(ContatoRequest contato, String accessToken, Throwable ex) {
+	    System.err.println(" Fallback acionado após tentativas: " + ex.getMessage());
+	    throw new HubspotApiException("Erro persistente ao criar contato após retry", 429);
+	}
 }
